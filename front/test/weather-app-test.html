@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>WEATHER APP TEST</title>
+  <script src="../bower_components/web-component-tester/browser.js"></script>
+  <script src="../bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+  <link rel="import" href="../src/weather-list.html">
+</head>
+
+<body>
+  <test-fixture id="weather-list">
+    <template>
+      <weather-list></weather-list>
+    </template>
+  </test-fixture>
+
+  <script>
+    suite('Test Converter Methods', () => {
+      let weatherList;
+      setup(() => {
+        weatherList = fixture('weather-list');
+      });
+
+      suite('Test Kelvin to Farenheit', () => {
+        test('300K returns 80F ', () => {
+          assert.equal(weatherList._kelvinToFarenheit(300), 80);
+        });
+      });
+
+      suite('Test Kelvin to Celsius', () => {
+        test('300K returns 27C', () => {
+          assert.equal(weatherList._kelvinToCelsius(300), 27);
+        });
+      });
+    })
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,137 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="weather-list">
+  <template>
+    <style>
+      :host {
+        display: block
+      }
+    </style>
+
+    <weather-card list-mode todays-weather="[[_computedTodaysTemp]]" list="[[_tempsList]]"
+      on-card-convert-to-celsius="_convertToCelsius" on-card-convert-to-farenheit="_convertToFarenheit">
+    </weather-card>
+
+  </template>
+
+  <script>
+    /**
+     * `weather-list` Weather visualization page
+     *
+     * @summary.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class WeatherList extends Polymer.Element {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'weather-list';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          data: {
+            type: Object,
+            observer: '_setInitialData'
+          },
+
+          _tempsList: {
+            type: Array,
+            value: () => []
+          },
+
+          defaultUnit: {
+            type: String,
+            value: 'c'
+          },
+
+          _indexedDays: {
+            type: Array,
+            value: ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
+          },
+
+          _computedTodaysTemp: {
+            type: Object,
+            computed: '_computeTodaysTemp(_tempsList)'
+          }
+        };
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+
+
+      }
+
+      /**
+       * Use for one-time configuration of your component after local DOM is initialized. 
+       */
+      ready() {
+        super.ready();
+      }
+
+      _kelvinToFarenheit(kelvin) {
+        const farenheitTemp = kelvin * 9 / 5 - 459.97
+        return farenheitTemp.toFixed(0)
+      }
+
+      _kelvinToCelsius(kelvin) {
+        const celsiusTemp = kelvin - 273.15
+        return celsiusTemp.toFixed(0)
+      }
+
+      _setInitialData(newValue) {
+        if (newValue) {
+          this.set('_tempsList', this._convertTempsList(this.defaultUnit, newValue))
+        }
+      }
+
+      _convertTempsList(unit, data) {
+        if (data && data.list) {
+          let list = data.list.map((item, index) => {
+            return {
+              day: this._indexedDays[index],
+              current: unit === 'c' ? this._kelvinToCelsius(item.temp.day) : this._kelvinToFarenheit(item.temp.day),
+              min: unit === 'c' ? this._kelvinToCelsius(item.temp.min) : this._kelvinToFarenheit(item.temp.min),
+              max: unit === 'c' ? this._kelvinToCelsius(item.temp.max) : this._kelvinToFarenheit(item.temp.max)
+            }
+          })
+          return list
+        }
+      }
+
+      _computeTodaysTemp(data) {
+        if (data && data.length) {
+          return {
+            day: data[0].day,
+            current: data[0].current,
+            min: data[0].min,
+            max: data[0].max
+          }
+        }
+      }
+
+      _convertToCelsius() {
+        this.set('_tempsList', this._convertTempsList('c', this.data))
+      }
+
+      _convertToFarenheit() {
+        this.set('_tempsList', this._convertTempsList('f', this.data))
+      }
+
+    }
+
+    window.customElements.define(WeatherList.is, WeatherList);
+  </script>
+</dom-module>

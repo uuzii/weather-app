@@ -1,0 +1,70 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="weather-utils-behavior.html">
+
+<dom-module id="weather-dm">
+
+  <script>
+    /**
+     * `weather-dm` Weather Data Manager
+     *
+     * @summary ShortDescription.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class WeaterDm extends WeatherUtilsBehavior(Polymer.Element) {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'weather-dm';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          url: {
+            type: String,
+            value: 'https://samples.openweathermap.org/data/2.5/forecast/daily?id=524901&appid='
+          },
+
+          apikey: {
+            type: String,
+            value: 'b1b15e88fa797225412429c1c50c122a1'
+          }
+        };
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+      }
+
+      /**
+       * Use for one-time configuration of your component after local DOM is initialized. 
+       */
+      ready() {
+        super.ready();
+      }
+
+      async requestWeather() {
+        try {
+          const data = await fetch(this.url + this.apikey)
+          const payload = await data.json()
+          this.eventDispatcher('dm-data-loaded', payload)
+        } catch (error) {
+          this.eventDispatcher('dm-data-error')
+        }
+      }
+
+    }
+
+    window.customElements.define(WeaterDm.is, WeaterDm);
+  </script>
+</dom-module>

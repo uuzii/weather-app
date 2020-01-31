@@ -1,0 +1,126 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+
+<link rel="import" href="weather-card.html">
+<link rel="import" href="weather-dm.html">
+<link rel="import" href="weather-list.html">
+<link rel="import" href="weather-utils-behavior.html">
+
+<dom-module id="weather-app">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      main {
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    </style>
+
+    <app-location route="{{route}}"></app-location>
+    <app-route route="{{route}}" pattern="/:view" data="{{routeData}}"></app-route>
+
+    <weather-dm id="dm"></weather-dm>
+
+    <main>
+      <iron-pages selected="[[routeData.view]]" attr-for-selected="name">
+        <!-- home view -->
+        <weather-card name="home">
+          <button slot="button" class="card_button" on-click="_requestWeather">Get the Weather</button>
+        </weather-card>
+
+        <!-- weather-list -->
+        <weather-list name="view" data="[[weatherData]]"></weather-list>
+
+        <!-- generic text view -->
+        <weather-card name="text">
+          <h2 slot="text">[[textViewLabel]]</h2>
+        </weather-card>
+      </iron-pages>
+    </main>
+
+  </template>
+
+  <script>
+    /**
+     * `weather-app` weather core app
+     *
+     * @summary Main App.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class WeaterApp extends  WeatherUtilsBehavior(Polymer.Element) {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'weather-app';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          weatherData: {
+            type: Object,
+            value: () => {}
+          },
+
+          textViewLabel: {
+            type: String,
+            value: 'Skeleton text'
+          }
+        };
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+
+        this.addEventListener('home-request-weather', () => {
+          this.shadowRoot.querySelector('#dm').requestWeather()
+        })
+
+        this.addEventListener('dm-data-loaded', (e) => {
+          this.set('weatherData', e.detail)
+          this.set('routeData.view', 'view')
+        })
+
+        this.addEventListener('dm-data-error', () => {
+          this.set('textViewLabel', 'Unable to retrieve the information at this moment.')
+          this.set('routeData.view', 'text')
+        })
+      }
+
+      /**
+       * Use for one-time configuration of your component after local DOM is initialized. 
+       */
+      ready() {
+        super.ready();
+
+        //this.set('routeData.view', 'home')
+      }
+
+      _requestWeather() {
+        this.set('textViewLabel', 'Loading...')
+        this.set('routeData.view', 'text')
+        this.eventDispatcher('home-request-weather')
+      }
+
+    }
+
+    window.customElements.define(WeaterApp.is, WeaterApp);
+  </script>
+</dom-module>

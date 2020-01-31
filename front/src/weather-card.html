@@ -1,0 +1,234 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="weather-utils-behavior.html">
+
+<dom-module id="weather-card">
+  <template>
+    <style>
+      .card {
+        border: 5px black solid;
+        background-color: #2e2e2e;
+        border-radius: 5px;
+        width: 500px;
+        height: 400px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .card .list {
+        display: block;
+      }
+
+      ::slotted([slot=button]) {
+        background-color: white;
+        border: none;
+        border-radius: 3px;
+        padding: 4px 16px;
+        font-size: 16px;
+      }
+
+      ::slotted([slot=text]) {
+        color: #ffffff;
+        font-size: 22px;
+      }
+
+      .card_text {
+        max-width: 200px;
+        text-align: center;
+      }
+
+      .card_list {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .list_top {
+        text-align: center;
+      }
+
+      .top_title {
+        font-size: 120px;
+        margin-top: 28px;
+        margin-bottom: 0px;
+      }
+
+      .top_subtitle {
+        margin: 0;
+        font-size: 50px;
+        position: relative;
+        top: -25px;
+      }
+
+      .list_top_buttons {
+        display: flex;
+        justify-content: flex-end;
+        margin: 8px 5px 2px;
+      }
+
+      .list_top_buttons button {
+        width: 38px;
+        height: 38px;
+        margin-left: 5px;
+        background-color: white;
+        border: 3px white solid;
+        font-size: 15px;
+      }
+
+      .list_top_buttons button:nth-child(2) {
+        background-color: transparent;
+        color: white;
+      }
+
+      .list_bottom {
+        display: flex;
+        align-items: stretch;
+      }
+
+      .bottom_item {
+        flex-grow: 1;
+        text-align: center;
+        margin: 5px;
+      }
+
+      .gray {
+        background-color: #E0E4E8;
+        color: black;
+      }
+
+      .orange {
+        background-color: #FF8143;
+        color: white;
+      }
+
+      .white {
+        color: #ffffff;
+      }
+    </style>
+
+    <dom-if if="[[!listMode]]">
+      <template>
+        <div class="card">
+          <div class="">
+            <slot name="button"></slot>
+          </div>
+          <div class="card_text">
+            <slot name="text"></slot>
+          </div>
+        </div>
+      </template>
+    </dom-if>
+
+    <dom-if if="[[listMode]]">
+      <template>
+        <div class="card list">
+          <div class="card_list">
+            <div class="list_top">
+              <div class="top_labels">
+                <h1 class="top_title white">[[todaysWeather.current]]&deg;</h1>
+                <h2 class="top_subtitle white">[[todaysWeather.min]]/[[todaysWeather.max]]&deg;</h2>
+              </div>
+              <div class="list_top_buttons">
+                <button on-click="_convertToCelsius">C</button>
+                <button on-click="_convertToFarenheit">F</button>
+              </div>
+            </div>
+            <div class="list_bottom">
+              <dom-repeat items="[[list]]" filter="_limitCount">
+                <template>
+                  <div class$="bottom_item [[_validateColor(index)]]">
+                    <h2>[[item.day]]</h2>
+                    <h2>[[item.min]]/[[item.max]]&deg;</h2>
+                  </div>
+                </template>
+              </dom-repeat>
+            </div>
+          </div>
+        </div>
+      </template>
+    </dom-if>
+
+  </template>
+
+  <script>
+    /**
+     * `weather-card` Card
+     *
+     * @summary .
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class WeatherCard extends WeatherUtilsBehavior(Polymer.Element) {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'weather-card';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          listMode: {
+            type: Boolean,
+            value: false
+          },
+
+          todaysWeather: {
+            type: Object,
+            value: {
+              day: 'Skeleton day',
+              current: 'x',
+              min: 'y',
+              max: 'z'
+            }
+          },
+
+          list: {
+            type: Array,
+            value: () => []
+          }
+        };
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+      }
+
+      /**
+       * Use for one-time configuration of your component after local DOM is initialized. 
+       */
+      ready() {
+        super.ready();
+      }
+
+      _convertToCelsius() {
+        this.eventDispatcher('card-convert-to-celsius')
+      }
+
+      _convertToFarenheit() {
+        this.eventDispatcher('card-convert-to-farenheit')
+      }
+
+      _limitCount() {
+        return arguments[1] > 0 && arguments[1] < 6
+      }
+
+      _validateColor(index) {
+        return index % 2 === 0 ? 'orange' : 'gray'
+      }
+
+    }
+
+    window.customElements.define(WeatherCard.is, WeatherCard);
+  </script>
+</dom-module>
