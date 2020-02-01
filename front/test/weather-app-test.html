@@ -9,12 +9,19 @@
   <script src="../bower_components/web-component-tester/browser.js"></script>
   <script src="../bower_components/webcomponentsjs/webcomponents-loader.js"></script>
   <link rel="import" href="../src/weather-list.html">
+  <link rel="import" href="../src/weather-card.html">
 </head>
 
 <body>
   <test-fixture id="weather-list">
     <template>
       <weather-list></weather-list>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="weather-card">
+    <template>
+      <weather-card></weather-card>
     </template>
   </test-fixture>
 
@@ -35,6 +42,29 @@
         test('300K returns 27C', () => {
           assert.equal(weatherList._kelvinToCelsius(300), 27);
         });
+      });
+    })
+
+    suite('Test button actions', () => {
+      let cardElement;
+      setup(() => {
+        cardElement = fixture('weather-card');
+      });
+
+      test('Test C button', (done) => {
+        let spy = sinon.spy();
+        cardElement.addEventListener('card-convert-to-celsius', spy);
+        cardElement._convertToCelsius();
+        expect(spy).has.been.calledOnce;
+        done();
+      });
+
+      test('Test F button', (done) => {
+        let spy = sinon.spy();
+        cardElement.addEventListener('card-convert-to-farenheit', spy);
+        cardElement._convertToFarenheit();
+        expect(spy).has.been.calledOnce;
+        done();
       });
     })
   </script>

@@ -14,48 +14,55 @@
      */
     class WeaterDm extends WeatherUtilsBehavior(Polymer.Element) {
       /**
-       * String providing the tag name to register the element under.
+       * @desc String providing the tag name to register the element under.
        */
       static get is() {
         return 'weather-dm';
       }
 
       /**
-       * Object describing property-related metadata used by Polymer features
+       * @desc Object describing property-related metadata used by Polymer features
        */
       static get properties() {
         return {
-          url: {
+          /**
+           * @type {String}
+           * @desc base url
+           */
+          baseUrl: {
             type: String,
-            value: 'https://samples.openweathermap.org/data/2.5/forecast/daily?id=524901&appid='
+            value: 'https://samples.openweathermap.org/data/2.5/forecast/'
           },
 
-          apikey: {
-            type: String,
-            value: 'b1b15e88fa797225412429c1c50c122a1'
-          }
+          /**
+           * @type {String}
+           * @desc points the frequency of weather you want to get
+           */
+          frequency: String,
+
+          /**
+           * @type {String}
+           * @desc points the weather's city you want to get
+           */
+          cityId: String,
+
+          /**
+           * @type {String}
+           * @desc openweather app api secret
+           */
+          apikey: String
         };
       }
 
       /**
-       * Instance of the element is created/upgraded. Use: initializing state,
-       * set up event listeners, create shadow dom.
-       * @constructor
+       * @desc request the weather to openweather api and disptach success or error response
+       * @event 'dm-data-loaded' dispatchs successful data
+       * @event 'dm-data-error' dispatchs error response message
        */
-      constructor() {
-        super();
-      }
-
-      /**
-       * Use for one-time configuration of your component after local DOM is initialized. 
-       */
-      ready() {
-        super.ready();
-      }
-
       async requestWeather() {
         try {
-          const data = await fetch(this.url + this.apikey)
+          const url = `${this.baseUrl}${this.frequency}?id=${this.cityId}&appid=${this.apikey}`
+          const data = await fetch(url)
           const payload = await data.json()
           this.eventDispatcher('dm-data-loaded', payload)
         } catch (error) {

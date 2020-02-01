@@ -1,27 +1,32 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="weather-utils-behavior.html">
+<link rel="import" href="weather-icons.html">
 
 <dom-module id="weather-card">
   <template>
     <style>
+      .container {
+        color: #ffffff;
+        background-color: #000000;
+        padding: 3px;
+        border-radius: 4px;
+      }
+
       .card {
-        border: 5px black solid;
         background-color: #2e2e2e;
-        border-radius: 5px;
-        width: 500px;
-        height: 400px;
-        margin: 0 auto;
+        width: 600px;
+        height: 440px;
+      }
+
+      .card.centered {
         display: flex;
         justify-content: center;
         align-items: center;
       }
 
-      .card .list {
-        display: block;
-      }
-
       ::slotted([slot=button]) {
-        background-color: white;
+        background-color: #ffffff;
         border: none;
         border-radius: 3px;
         padding: 4px 16px;
@@ -33,63 +38,106 @@
         font-size: 22px;
       }
 
-      .card_text {
-        max-width: 200px;
-        text-align: center;
+      .card h1,
+      .card h2 {
+        margin: 0;
       }
 
-      .card_list {
-        width: 100%;
+      .card_item {
+        height: 220px;
+      }
+
+      .card_item.top {
         display: flex;
+        justify-content: flex-end;
+        align-items: center;
         flex-direction: column;
       }
 
-      .list_top {
-        text-align: center;
-      }
+      .top_info {}
 
-      .top_title {
-        font-size: 120px;
-        margin-top: 28px;
-        margin-bottom: 0px;
-      }
-
-      .top_subtitle {
-        margin: 0;
-        font-size: 50px;
+      .info_container {
+        display: flex;
+        font-weight: bolder;
         position: relative;
-        top: -25px;
+        top: 22px;
       }
 
-      .list_top_buttons {
+      .info_container--item {
         display: flex;
-        justify-content: flex-end;
-        margin: 8px 5px 2px;
+        align-items: center;
+        padding-right: 16px;
       }
 
-      .list_top_buttons button {
-        width: 38px;
-        height: 38px;
-        margin-left: 5px;
-        background-color: white;
-        border: 3px white solid;
-        font-size: 15px;
+      .info_container--item iron-icon {
+        width: 80px;
+        height: 80px;
       }
 
-      .list_top_buttons button:nth-child(2) {
+      .info_container--title {
+        display: block;
+        font-size: 80px;
+      }
+
+      .info_container--subtitle {
+        display: block;
+        font-size: 40px;
+        position: relative;
+        top: -10px;
+      }
+
+      .top_actions {
+        height: 35px;
+        padding: 10px 3px;
+        align-self: flex-end;
+        margin-top: 25px;
+      }
+
+      .top_actions button {
+        width: 35px;
+        height: 35px;
+        margin-left: 4px;
+        background-color: #ffffff;
+        color: #2e2e2e;
+        border: 3px #ffffff solid;
+        text-shadow: 1px 0 #2e2e2e;
+        font-size: 16px;
+      }
+
+      .top_actions button:nth-child(2) {
+        text-shadow: 1px 0 #ffffff;
+        color: #ffffff;
         background-color: transparent;
-        color: white;
       }
 
-      .list_bottom {
+      .card_item.bottom {
         display: flex;
-        align-items: stretch;
+        padding: 3px 0;
+        position: relative;
+        top: -3px;
       }
 
       .bottom_item {
-        flex-grow: 1;
+        flex: 1;
+        display: flex;
+        flex-flow: column;
+        justify-content: center;
+        margin: 3px;
+        padding-bottom: 10px;
+      }
+
+      .bottom_item h2 {
         text-align: center;
-        margin: 5px;
+      }
+
+      .bottom_item--icon {
+        text-align: center;
+        padding-bottom: 10px;
+      }
+
+      .bottom_item--icon iron-icon {
+        width: 40px;
+        height: 40px;
       }
 
       .gray {
@@ -101,20 +149,18 @@
         background-color: #FF8143;
         color: white;
       }
-
-      .white {
-        color: #ffffff;
-      }
     </style>
 
     <dom-if if="[[!listMode]]">
       <template>
-        <div class="card">
-          <div class="">
-            <slot name="button"></slot>
-          </div>
-          <div class="card_text">
-            <slot name="text"></slot>
+        <div class="container">
+          <div class="card centered">
+            <div class="">
+              <slot name="button"></slot>
+            </div>
+            <div class="card_text">
+              <slot name="text"></slot>
+            </div>
           </div>
         </div>
       </template>
@@ -122,22 +168,32 @@
 
     <dom-if if="[[listMode]]">
       <template>
-        <div class="card list">
-          <div class="card_list">
-            <div class="list_top">
-              <div class="top_labels">
-                <h1 class="top_title white">[[todaysWeather.current]]&deg;</h1>
-                <h2 class="top_subtitle white">[[todaysWeather.min]]/[[todaysWeather.max]]&deg;</h2>
+        <div class="container">
+          <div class="card">
+            <div class="card_item top">
+              <div class="top_info">
+                <div class="info_container">
+                  <div class="info_container--item">
+                    <iron-icon class="info_container--icon" icon="weather-icons:[[todaysWeather.icon]]"></iron-icon>
+                  </div>
+                  <div>
+                    <span class="info_container--title">[[todaysWeather.current]]&deg;</span>
+                    <span class="info_container--subtitle">[[todaysWeather.min]]/[[todaysWeather.max]]&deg;</span>
+                  </div>
+                </div>
               </div>
-              <div class="list_top_buttons">
+              <div class="top_actions">
                 <button on-click="_convertToCelsius">C</button>
                 <button on-click="_convertToFarenheit">F</button>
               </div>
             </div>
-            <div class="list_bottom">
+            <div class="card_item bottom">
               <dom-repeat items="[[list]]" filter="_limitCount">
                 <template>
-                  <div class$="bottom_item [[_validateColor(index)]]">
+                  <div class$="bottom_item [[_validateColor(index)]]"">
+                    <div class="bottom_item--icon">
+                      <iron-icon icon$="weather-icons:[[item.icon]]"></iron-icon>
+                    </div>
                     <h2>[[item.day]]</h2>
                     <h2>[[item.min]]/[[item.max]]&deg;</h2>
                   </div>
@@ -162,22 +218,34 @@
      */
     class WeatherCard extends WeatherUtilsBehavior(Polymer.Element) {
       /**
-       * String providing the tag name to register the element under.
+       * @desc String providing the tag name to register the element under.
        */
       static get is() {
         return 'weather-card';
       }
 
       /**
-       * Object describing property-related metadata used by Polymer features
+       * @desc Object describing property-related metadata used by Polymer features
        */
       static get properties() {
         return {
+          /**
+           * @type {Boolean}
+           * @desc enables the list mode in order to show the weather week list
+           * disable if you want to see just a generic text or button in the center of this card
+           * @default false
+           */
           listMode: {
             type: Boolean,
             value: false
           },
 
+          /**
+           * @type {Object}
+           * @desc receive speccially the current weather, this property is just the fisrt
+           * item of week's weather list
+           * @default {skeleton} 
+           */
           todaysWeather: {
             type: Object,
             value: {
@@ -188,41 +256,45 @@
             }
           },
 
+          /**
+           * @type {Array}
+           * @desc week's weather list to show
+           * @default []  
+           */
           list: {
             type: Array,
             value: () => []
           }
         };
       }
-
+      
       /**
-       * Instance of the element is created/upgraded. Use: initializing state,
-       * set up event listeners, create shadow dom.
-       * @constructor
+       * @desc dispatchs event to notify if K to C conversion is required
+       * @event 'card-convert-to-celsius'
        */
-      constructor() {
-        super();
-      }
-
-      /**
-       * Use for one-time configuration of your component after local DOM is initialized. 
-       */
-      ready() {
-        super.ready();
-      }
-
       _convertToCelsius() {
         this.eventDispatcher('card-convert-to-celsius')
       }
 
+      /**
+       * @desc dispatchs event to notify if K to F conversion is required
+       * @event 'card-convert-to-celsius'
+       */
       _convertToFarenheit() {
         this.eventDispatcher('card-convert-to-farenheit')
       }
 
+      /**
+       * @desc adjust the segment to: today's next day - 5th week day for repeater
+       */
       _limitCount() {
         return arguments[1] > 0 && arguments[1] < 6
       }
 
+      /**
+       * @desc validate which color item will use to asssign a class
+       * @return {String} 'orange' || 'gray'
+       */
       _validateColor(index) {
         return index % 2 === 0 ? 'orange' : 'gray'
       }

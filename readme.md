@@ -17,7 +17,7 @@ Second, install [Bower](https://bower.io/) using [npm](https://www.npmjs.com)
 
 ### Configure and start the proxy
 
-We need a proxy to avoid cors issue, install the packgages with this command
+We need a proxy to avoid cors issue, install the packgages with these commands:
 
     cd weather-app/proxy
     npm install cors-anywhere
@@ -29,7 +29,7 @@ intercept the frontend requests and add headers to avoid the cors block
 
 ### Start the app locally
 
-Donwload the frontend components with this commands:
+Donwload the frontend components with these commands:
 
     cd weather-app/front
     bower install

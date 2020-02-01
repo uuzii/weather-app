@@ -6,7 +6,6 @@
 <link rel="import" href="weather-card.html">
 <link rel="import" href="weather-dm.html">
 <link rel="import" href="weather-list.html">
-<link rel="import" href="weather-utils-behavior.html">
 
 <dom-module id="weather-app">
   <template>
@@ -24,21 +23,32 @@
     </style>
 
     <app-location route="{{route}}"></app-location>
-    <app-route route="{{route}}" pattern="/:view" data="{{routeData}}"></app-route>
 
-    <weather-dm id="dm"></weather-dm>
+    <app-route
+      route="{{route}}"
+      pattern="/:view"
+      data="{{routeData}}">
+    </app-route>
+
+    <weather-dm
+      id="dm"
+      frequency="daily",
+      city-id="524901"
+      api-key="b1b15e88fa797225412429c1c50c122a1">
+    </weather-dm>
 
     <main>
       <iron-pages selected="[[routeData.view]]" attr-for-selected="name">
         <!-- home view -->
         <weather-card name="home">
-          <button slot="button" class="card_button" on-click="_requestWeather">Get the Weather</button>
+          <button
+            slot="button"
+            class="card_button"
+            on-click="_requestWeather">Get the Weather</button>
         </weather-card>
-
-        <!-- weather-list -->
+        <!-- weather list view -->
         <weather-list name="view" data="[[weatherData]]"></weather-list>
-
-        <!-- generic text view -->
+        <!-- generic text view for messages -->
         <weather-card name="text">
           <h2 slot="text">[[textViewLabel]]</h2>
         </weather-card>
@@ -56,24 +66,34 @@
      * @polymer
      * @extends {Polymer.Element}
      */
-    class WeaterApp extends  WeatherUtilsBehavior(Polymer.Element) {
+    class WeaterApp extends Polymer.Element {
       /**
-       * String providing the tag name to register the element under.
+       * @desc String providing the tag name to register the element under.
        */
       static get is() {
         return 'weather-app';
       }
 
       /**
-       * Object describing property-related metadata used by Polymer features
+       * @desc Object describing property-related metadata used by Polymer features
        */
       static get properties() {
         return {
+          /**
+           * @type {Object}
+           * @desc provides the weather data to weather list view
+           * @default {}
+           */
           weatherData: {
             type: Object,
             value: () => {}
           },
 
+          /**
+           * @type {String}
+           * @desc current label of generic text view
+           * @default 'Skeleton text'
+           */
           textViewLabel: {
             type: String,
             value: 'Skeleton text'
@@ -82,16 +102,12 @@
       }
 
       /**
-       * Instance of the element is created/upgraded. Use: initializing state,
+       * @desc Instance of the element is created/upgraded. Use: initializing state,
        * set up event listeners, create shadow dom.
        * @constructor
        */
       constructor() {
         super();
-
-        this.addEventListener('home-request-weather', () => {
-          this.shadowRoot.querySelector('#dm').requestWeather()
-        })
 
         this.addEventListener('dm-data-loaded', (e) => {
           this.set('weatherData', e.detail)
@@ -105,18 +121,20 @@
       }
 
       /**
-       * Use for one-time configuration of your component after local DOM is initialized. 
+       * @desc Use for one-time configuration of your component after local DOM is initialized. 
        */
       ready() {
         super.ready();
-
-        //this.set('routeData.view', 'home')
+        this.set('routeData.view', 'home')
       }
 
+      /**
+       * @desc generate the order to request the data to the weather-dm component
+      */
       _requestWeather() {
         this.set('textViewLabel', 'Loading...')
         this.set('routeData.view', 'text')
-        this.eventDispatcher('home-request-weather')
+        this.shadowRoot.querySelector('#dm').requestWeather()
       }
 
     }
