@@ -50,7 +50,7 @@
            * @type {String}
            * @desc openweather app api secret
            */
-          apikey: String
+          apiKey: String
         };
       }
 
@@ -61,7 +61,7 @@
        */
       async requestWeather() {
         try {
-          const url = `${this.baseUrl}${this.frequency}?id=${this.cityId}&appid=${this.apikey}`
+          const url = `${this.baseUrl}${this.frequency}?id=${this.cityId}&appid=${this.apiKey}`
           const data = await fetch(url)
           const payload = await data.json()
           this.eventDispatcher('dm-data-loaded', payload)
